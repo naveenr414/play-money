@@ -1,7 +1,45 @@
+let NUMBER_DICT = {
+	"zero":"0",
+	"one":1,
+	"two":2,
+	"three":3,
+	"four":4,
+	"five":5,
+	"six":6,
+	"seven":7,
+	"eight":8,
+	"nine":9,
+	"ten":10,
+	"eleven":11,
+	"twelve":12,
+	"thirteen":13,
+	"fourteen":14,
+	"fifteen":15,
+	"sixteen":16,
+	"seventeen":17,
+	"eighteen":18,
+	"nineteen":19,
+	"twenty":20,
+	"thirty":30,
+	"forty":40,
+	"fifty":50,
+	"sixty":60,
+	"seventy":70,
+	"eighty":80,
+	"ninety":90,
+	"hundred":100,
+	"thousand":1000,
+	"million":1000000,
+	"billion":1000000000,
+}
+
+let fillerWords = ["and"];
+
+
 $(document).ready(function() {
 	 $("#submit").click(function() {
 		 let textValue = $("#mainArea").val();
-		 	$("#text").text(textValue);
+		 	$("#text").text(parseParagraph(textValue));
 	 });
 	 
 	 $("#mainArea").keydown(function(e) {
@@ -10,6 +48,69 @@ $(document).ready(function() {
 			}
 	 });
 });
+
+function parseParagraph(para) {
+	// Turn things like $59 to $ 59 
+	para = para.replace("$","$ ");
+	
+	// Turn punctuations like 59. to 59 .
+	let punctuationList = [".","?","!"]
+	for(punctuation of punctuationList){
+		para = para.replace(punctuation," "+punctuation);
+	}
+	
+	words = para.split(" ");
+	let i = 0;
+	newPara = "";
+	
+	while(i<words.length) {
+		
+		if(words[i] in NUMBER_DICT) {
+			let end = i;
+			
+			while(words[end] in NUMBER_DICT || 
+						words[end] in fillerWords && end+1 != words.length && words[end+1] in NUMBER_DICT) {
+				end+=1;
+			}
+			
+			// Convert all the words from [i,end)
+			let combinedWord = ""
+			for(var j = i;j<end;j++) {
+				combinedWord+=words[j] + " ";
+			}
+			combinedWord = combinedWord.slice(0,-1);
+						
+			newPara+=writtenToNumber(combinedWord);
+			
+			i = end;
+		}
+		else {
+			newPara+=words[i];
+			i+=1;
+		}
+		
+		newPara+=" ";		
+	}
+	
+	
+	
+	// Remove the last space
+	newPara = newPara.slice(0,-1);
+
+	
+	// Convert $ a to $a
+	newPara = newPara.replace("$ ","$");
+	
+	
+	// Change a . to a.
+	for(punctuation of punctuationList) {
+			newPara = newPara.replace(punctuation + " ",punctuation);
+	}
+	
+	
+	
+	return newPara
+}
 
 function writtenToNumber(num) {
 	/* This function converts written numbers to numerics 
@@ -40,41 +141,6 @@ function writtenToNumber(num) {
 	return the sum of the stack 
 	
 	*/ 
-	
-	let NUMBER_DICT = {
-    "zero":"0",
-    "one":1,
-    "two":2,
-    "three":3,
-    "four":4,
-    "five":5,
-    "six":6,
-    "seven":7,
-    "eight":8,
-    "nine":9,
-    "ten":10,
-    "eleven":11,
-    "twelve":12,
-    "thirteen":13,
-    "fourteen":14,
-    "fifteen":15,
-    "sixteen":16,
-    "seventeen":17,
-    "eighteen":18,
-    "nineteen":19,
-    "twenty":20,
-    "thirty":30,
-    "forty":40,
-    "fifty":50,
-    "sixty":60,
-    "seventy":70,
-    "eighty":80,
-    "ninety":90,
-    "hundred":100,
-    "thousand":1000,
-    "million":1000000,
-    "billion":1000000000,
-	}
 		
 	num = num.toLowerCase();
 	
