@@ -34,12 +34,13 @@ let NUMBER_DICT = {
 }
 
 let fillerWords = ["and"];
-
+let punctuationList = [".","?","!"]
 
 $(document).ready(function() {
 	 $("#submit").click(function() {
 		 let textValue = $("#mainArea").val();
 		 	$("#text").text(parseParagraph(textValue));
+			findMoney(parseParagraph(textValue));
 	 });
 	 
 	 $("#mainArea").keydown(function(e) {
@@ -49,15 +50,89 @@ $(document).ready(function() {
 	 });
 });
 
-function parseParagraph(para) {
-	// Turn things like $59 to $ 59 
-	para = para.replace("$","$ ");
-	
-	// Turn punctuations like 59. to 59 .
-	let punctuationList = [".","?","!"]
-	for(punctuation of punctuationList){
-		para = para.replace(punctuation," "+punctuation);
+function findMoney(para) {
+	word = prePara(para).split(" ");
+	moneyWords = ["$","dollar","dollars","cents","cent"];
+				
+	for(let i = 0;i<word.length;i++) {
+		if(word[i].length>0 && !isNaN(word[i])) {
+			let distanceFront = -1;
+			let distanceBack = -1;
+			
+			let j = i+1;
+			while(j<word.length && !(moneyWords.includes(word[j]))) {
+				j+=1;
+			}
+			
+			if(j != para.length) {
+				distanceFront = j-i;
+			}
+			else {
+				distanceFront = -1;
+			}
+			
+			j = i-1;
+			while(j>=0 && !(moneyWords.includes(word[j]))) {
+				j-=1;
+			}
+			
+			if(j>=0) {
+				distanceBack = i-j;	
+			}
+			else {
+				distanceBack = -1;
+			}
+						
+			let minDistance = Math.min(distanceFront,distanceBack);
+			
+			if(distanceFront<=2 && distanceFront>=0 || distanceBack<=2 && distanceBack>=0) {
+				console.log(word[i] + " is a money word");
+			}	
+		}
 	}
+}
+
+function replaceAll(string, target, replacement) {
+	return string.split(target).join(replacement)
+}
+
+function prePara(para) {
+	/* This does some preprocessing for the para
+		Like replaces $ with $_, etc. 
+		*/
+		
+	para = replaceAll(para,"\n","");
+	para = replaceAll(para,"\t","");
+		
+	// Turn things like $59 to $ 59 
+	para = replaceAll(para,"$"," $ ");
+	para = replaceAll(para, "-"," - ");
+		
+	// Turn punctuations like 59. to 59 .
+	for(punctuation of punctuationList){
+		para = replaceAll(para, punctuation, " "+punctuation + " ");
+	}
+	
+	return para;
+}
+
+function postPara(para) {
+	// Remove the last space
+	para = para.slice(0,-1);
+	// Convert $ a to $a
+	
+	para = replaceAll(para, " $ ","$");
+	para = replaceAll(para, " - ","-");
+	// Change a . to a.
+	for(punctuation of punctuationList) {
+		para = replaceAll(para, " "+punctuation + " ",punctuation);
+		}
+	
+	return para;
+}
+
+function parseParagraph(para) {	
+	para = prePara(para);
 	
 	words = para.split(" ");
 	let i = 0;
@@ -92,23 +167,8 @@ function parseParagraph(para) {
 		newPara+=" ";		
 	}
 	
-	
-	
-	// Remove the last space
-	newPara = newPara.slice(0,-1);
+	newPara = postPara(newPara);
 
-	
-	// Convert $ a to $a
-	newPara = newPara.replace("$ ","$");
-	
-	
-	// Change a . to a.
-	for(punctuation of punctuationList) {
-			newPara = newPara.replace(punctuation + " ",punctuation);
-	}
-	
-	
-	
 	return newPara
 }
 
