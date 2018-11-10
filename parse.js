@@ -40,8 +40,8 @@ let moneyIndices = []
 $(document).ready(function() {
 	 $("#submit").click(function() {
 		 let textValue = $("#mainArea").val();
-		 	$("#text").text(parseParagraph(textValue));
-			findMoney(parseParagraph(textValue));
+		 findMoney(textValue);
+		 	$("#text").text(scaleMoney(textValue,2));
 	 });
 	 
 	 $("#mainArea").keydown(function(e) {
@@ -50,6 +50,18 @@ $(document).ready(function() {
 			}
 	 });
 });
+
+function scaleMoney(para,scale) {
+	para = prePara(para).split(" ");
+	for(index of moneyIndices) {
+		para[index] = (parseInt(para[index])*scale).toString();
+	}
+
+	
+	para = postPara(para.join(" "));
+	
+	return para;
+}
 
 function findMoney(para) {
 	moneyIndices = [];
@@ -121,7 +133,7 @@ function prePara(para) {
 
 function postPara(para) {
 	// Remove the last space
-	para = para.slice(0,-1);
+	//para = para.slice(0,-1);
 	// Convert $ a to $a
 	
 	para = replaceAll(para, " $ ","$");
