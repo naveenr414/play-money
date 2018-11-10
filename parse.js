@@ -34,7 +34,8 @@ let NUMBER_DICT = {
 }
 
 let fillerWords = ["and"];
-let punctuationList = [".","?","!"]
+let punctuationList = [".","?","!",";",",",":",]
+let moneyIndices = []
 
 $(document).ready(function() {
 	 $("#submit").click(function() {
@@ -51,6 +52,8 @@ $(document).ready(function() {
 });
 
 function findMoney(para) {
+	moneyIndices = [];
+	
 	word = prePara(para).split(" ");
 	moneyWords = ["$","dollar","dollars","cents","cent"];
 				
@@ -86,7 +89,7 @@ function findMoney(para) {
 			let minDistance = Math.min(distanceFront,distanceBack);
 			
 			if(distanceFront<=2 && distanceFront>=0 || distanceBack<=2 && distanceBack>=0) {
-				console.log(word[i] + " is a money word");
+				moneyIndices.push(i);
 			}	
 		}
 	}
