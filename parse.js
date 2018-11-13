@@ -34,15 +34,22 @@ let NUMBER_DICT = {
 }
 
 let fillerWords = ["and"];
-let punctuationList = [".","?","!",";",",",":",]
-let moneyIndices = []
+let punctuationList = [".","?","!",";",",",":",];
+let moneyIndices = [];
+
 
 $(document).ready(function() {
 	 $("#submit").click(function() {
 		 let textValue = $("#mainArea").val();
-		 findMoney(textValue);
-		 	$("#text").text(scaleMoney(textValue,2));
+		findMoney(textValue);
+		$("#text").text(textValue);
 	 });
+	 
+	 $("#myRange").change(function() {
+		 $("#text").text(scaleMoney($("#mainArea").val(),Math.pow(2,parseInt($("#myRange").val()))));
+		 $("#slideValue").text($("#myRange").val());
+	 });
+	 
 	 
 	 $("#mainArea").keydown(function(e) {
 			if(e.keyCode == 13) {
@@ -57,7 +64,6 @@ function scaleMoney(para,scale) {
 		para[index] = (parseInt(para[index])*scale).toString();
 	}
 
-	
 	para = postPara(para.join(" "));
 	
 	return para;
