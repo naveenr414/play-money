@@ -1,3 +1,7 @@
+function replaceAll(string, target, replacement) {
+	return string.split(target).join(replacement)
+}
+
 /* This part is a function that turns numbers into words
 It was taken from Stack Overflow */
 
